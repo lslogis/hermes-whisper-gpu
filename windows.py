@@ -4,7 +4,7 @@ ctranslate2 is built for CUDA 12 and preloads every DLL in its own folder. Witho
 falls back to CPU, and every Hermes update rebuilds the venv. The DLLs are restored from NVIDIA's PyPI wheels, pinned
 and SHA-256 verified.
 """
-import hashlib, importlib.util, logging, threading, urllib.request, zipfile
+import hashlib, importlib.util, logging, os, threading, urllib.request, zipfile
 from pathlib import Path
 
 PYPI = "https://files.pythonhosted.org/packages/"
@@ -95,8 +95,9 @@ def _setup(parser):
 
 def register(ctx):
     # Plugins load before the first transcription imports ctranslate2, so DLLs restored here are used without a
-    # restart. Cached wheels restore in seconds; a first-time download runs in the background.
-    if missing():
+    # restart. Cached wheels restore in seconds; a first-time download runs in the background. Without an NVIDIA
+    # driver (nvcuda.dll) there is nothing to accelerate, so nothing is downloaded.
+    if Path(os.environ.get("SystemRoot", r"C:\Windows"), "System32", "nvcuda.dll").exists() and missing():
         if all(_cache(url).exists() for url, *_ in WHEELS):
             _restore()
         else:

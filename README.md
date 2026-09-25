@@ -10,7 +10,7 @@ across Hermes updates. One plugin, two platforms.
 | **Windows** (64-bit) | Any NVIDIA GPU with a driver that supports CUDA 12 (528.33 or newer). No CUDA toolkit or cuDNN install needed. |
 | **macOS** | Apple silicon (M1 or later) and a local MLX server with a Whisper model, see [MACOS.md](MACOS.md). Intel Macs cannot run MLX. |
 
-The plugin does nothing on Linux, AMD GPUs or Intel Macs.
+The plugin does nothing on Linux, on Windows without an NVIDIA driver, or on Intel Macs.
 
 On Windows, pick `compute_type` by GPU generation ([CTranslate2](https://opennmt.net/CTranslate2/quantization.html)):
 `int8_float16` or `float16` need compute capability 7.0+ (GTX 16 / RTX 20 series and newer); on 6.1 (GTX 10
