@@ -1,5 +1,7 @@
 # whisper-gpu — Hermes plugin
 
+**English** · [한국어](README.ko.md) · [日本語](README.ja.md)
+
 GPU speech-to-text for [Hermes Agent](https://github.com/NousResearch/hermes-agent)'s local Whisper, kept working
 across Hermes updates. One plugin, two platforms.
 

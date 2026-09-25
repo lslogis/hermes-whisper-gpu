@@ -1,5 +1,7 @@
 # whisper-gpu on macOS
 
+**English** · [한국어](MACOS.ko.md) · [日本語](MACOS.ja.md)
+
 Hermes' local Whisper is faster-whisper, which has no Metal backend, so on a Mac it always runs on the CPU. This
 plugin registers the speech-to-text provider `whisper-gpu`, which sends audio to a **local MLX server** on the Mac's
 GPU and falls back to Hermes' CPU Whisper when that server is unreachable.
