@@ -4,7 +4,8 @@ Hermes' local Whisper is faster-whisper, which has no Metal backend, so on a Mac
 plugin registers the speech-to-text provider `whisper-gpu`, which sends audio to a **local MLX server** on the Mac's
 GPU and falls back to Hermes' CPU Whisper when that server is unreachable.
 
-M4 Max, `whisper-large-v3-turbo`: CPU ≈4 s per clip, MLX 0.3 s.
+Needs Apple silicon (M1 or later; MLX does not run on Intel Macs). Measured on an M4 Max with
+`whisper-large-v3-turbo`: CPU ≈4 s per clip, MLX 0.3 s. Smaller chips are slower but still well ahead of the CPU.
 
 ## 1. A local MLX server
 

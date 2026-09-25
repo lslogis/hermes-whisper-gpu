@@ -1,12 +1,27 @@
 # whisper-gpu — Hermes plugin
 
 GPU speech-to-text for [Hermes Agent](https://github.com/NousResearch/hermes-agent)'s local Whisper, kept working
-across Hermes updates. One plugin, two platforms:
+across Hermes updates. One plugin, two platforms.
 
-| | Without | With |
+## Requirements
+
+| | Needs |
+|---|---|
+| **Windows** (64-bit) | Any NVIDIA GPU with a driver that supports CUDA 12 (528.33 or newer). No CUDA toolkit or cuDNN install needed. |
+| **macOS** | Apple silicon (M1 or later) and a local MLX server with a Whisper model, see [MACOS.md](MACOS.md). Intel Macs cannot run MLX. |
+
+The plugin does nothing on Linux, AMD GPUs or Intel Macs.
+
+On Windows, pick `compute_type` by GPU generation ([CTranslate2](https://opennmt.net/CTranslate2/quantization.html)):
+`int8_float16` or `float16` need compute capability 7.0+ (GTX 16 / RTX 20 series and newer); on 6.1 (GTX 10
+series) use `int8`. CTranslate2 falls back to a supported type on its own, so `auto` is always safe.
+
+Measured (`large-v3-turbo`, Korean speech):
+
+| Machine | Without | With |
 |---|---|---|
-| Windows, RTX 5080, `large-v3-turbo`, 5 Korean clips | CPU 20.4 s | CUDA 1.1 s |
-| macOS, M4 Max, `large-v3-turbo`, one clip ([MACOS.md](MACOS.md)) | CPU ≈4 s | MLX 0.3 s |
+| Windows, RTX 5080, 5 clips | CPU 20.4 s | CUDA 1.1 s |
+| macOS, M4 Max, one clip | CPU ≈4 s | MLX 0.3 s |
 
 ```
 hermes plugins install lslogis/hermes-whisper-gpu
