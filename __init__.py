@@ -6,7 +6,7 @@ PyPI wheels, pinned and SHA-256 verified.
 macOS: faster-whisper has no Metal backend, so transcription goes to a local MLX server (OpenAI-compatible
 /audio/transcriptions, e.g. oMLX) and falls back to Hermes' CPU Whisper when the server is unreachable.
 """
-import hashlib, importlib.util, json, sys, threading, urllib.request, uuid, zipfile
+import hashlib, importlib.util, json, logging, sys, threading, urllib.request, uuid, zipfile
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -36,9 +36,13 @@ def _sha256(path):
     return h.hexdigest()
 
 
-def _wheel(url, sha):
+def _cache(url):
     from hermes_constants import get_hermes_home
-    path = get_hermes_home() / "cache" / "whisper-gpu" / url.rsplit("/", 1)[1]
+    return get_hermes_home() / "cache" / "whisper-gpu" / url.rsplit("/", 1)[1]
+
+
+def _wheel(url, sha):
+    path = _cache(url)
     if path.exists() and _sha256(path) == sha:
         return path
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -69,12 +73,14 @@ def install():
                     name = info.filename.rsplit("/", 1)[-1]  # basename only: no path from the archive is used
                     if name.startswith(prefix) and name.endswith(suffix) and not (t / name).exists():
                         (t / name).write_bytes(z.read(info))
-    return f"GPU DLLs installed in {t}; restart Hermes to use them"
+    return f"GPU DLLs installed in {t}"
 
 
-def _on_session_start(**_):
-    if sys.platform == "win32" and missing():
-        threading.Thread(target=install, daemon=True).start()
+def _restore():
+    try:
+        install()
+    except Exception as e:
+        logging.getLogger(__name__).warning("whisper-gpu: restore failed: %s", e)
 
 
 def _cli(args):
@@ -118,8 +124,14 @@ def _mlx_provider(url, default_model):
 
 
 def register(ctx):
-    ctx.register_hook("on_session_start", _on_session_start)
+    # Plugins load before the first transcription imports ctranslate2, so DLLs restored here are used without a
+    # restart. Cached wheels restore in seconds; a first-time download runs in the background.
     if sys.platform == "win32":
+        if missing():
+            if all(_cache(url).exists() for url, *_ in WHEELS):
+                _restore()
+            else:
+                threading.Thread(target=_restore, daemon=True).start()
         ctx.register_cli_command(name="whisper-gpu", help="GPU speech-to-text DLLs (status / install)",
                                  setup_fn=_setup, handler_fn=_cli)
     elif sys.platform == "darwin":

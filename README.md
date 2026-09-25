@@ -14,8 +14,9 @@ and macOS, kept working across Hermes updates.
 package folder. A PC with only CUDA 13, or no toolkit, has no `cublas64_12.dll` / `cudnn64_9.dll`, so Hermes falls
 back to CPU without saying so. Hermes updates rebuild the venv and remove any DLLs copied in by hand.
 
-- On `on_session_start` the plugin checks the three DLLs next to `ctranslate2` and installs any that are missing in
-  a background thread. They take effect on the next Hermes start.
+- When Hermes loads the plugin it checks the three DLLs next to `ctranslate2` and restores any that are missing.
+  Plugins load before the first transcription imports `ctranslate2`, so no restart is needed: from the verified
+  wheel cache this takes a few seconds; a first-time download (≈1.3 GB) runs in the background.
 - `hermes whisper-gpu` shows the status; `hermes whisper-gpu install` installs now.
 
 ```

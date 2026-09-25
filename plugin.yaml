@@ -1,6 +1,4 @@
 name: whisper-gpu
-version: 1.1.0
-description: "GPU speech-to-text for Hermes' local Whisper. Windows: restores CUDA 12 cuBLAS/cuDNN DLLs (pinned NVIDIA wheels, SHA-256 verified) after updates. macOS: transcribes on a local MLX server with CPU fallback."
+version: 1.2.0
+description: "GPU speech-to-text for Hermes' local Whisper. Windows: restores CUDA 12 cuBLAS/cuDNN DLLs (pinned NVIDIA wheels, SHA-256 verified) at load after updates, no restart needed. macOS: transcribes on a local MLX server with CPU fallback."
 author: lslogis
-provides_hooks:
-  - on_session_start
